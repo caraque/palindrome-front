@@ -1,0 +1,24 @@
+.header {
+  background-color: #0071CE;
+  padding: 10px;
+
+  .icon-container {
+    display: inline-block;
+    width: 25%;
+
+    .icon-img {
+      height: 50px;
+      width: 100px;
+    }
+  }
+
+  .search-container {
+    width: 50%;
+    display: inline-block;
+
+    .search-text {
+      border-radius: 25px;
+      border: none;
+    }
+  }
+}

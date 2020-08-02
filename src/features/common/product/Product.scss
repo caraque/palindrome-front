@@ -1,0 +1,30 @@
+.product-container {
+  display: inline-block;
+  height: auto;
+  width: 330px;
+
+  .image-container {
+    text-align: center;
+
+    .product-image {
+      height: 135px;
+      width: 230px;
+    }
+  }
+
+  .text-container {
+    text-transform: capitalize;
+  }
+
+  .off-50 {
+    background-color: #DF2027;
+    width: 35px;
+    border-radius: 40px;
+    text-align: center;
+    color: #FFF;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: 3px;
+  }
+}
