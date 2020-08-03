@@ -29,7 +29,9 @@ class SearchResult extends Component {
             (prevProps.searchedWord !== this.props.searchedWord || prevState.activePage !== this.state.activePage)) {
             await this.setState({
                 products: [],
-            })
+                activePage: prevState.activePage === this.state.activePage ? 1 : this.state.activePage,
+                totalPages: prevState.totalPages === this.state.totalPages ? 1 : this.state.totalPages,
+            });
             await this.filterProducts();
         }
     }
@@ -59,7 +61,7 @@ class SearchResult extends Component {
     };
 
     render() {
-        const {totalPages, isLoading} = this.state;
+        const {totalPages, isLoading, activePage} = this.state;
         return (
             this.props.searchedWord ?
                 (
@@ -85,6 +87,7 @@ class SearchResult extends Component {
                                 <div className="pagination-container">
                                     <Pagination
                                         className="pagination"
+                                        page={activePage}
                                         count={totalPages}
                                         variant="outlined"
                                         color="primary"
