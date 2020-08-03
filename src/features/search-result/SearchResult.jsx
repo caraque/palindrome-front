@@ -1,16 +1,23 @@
 import React, {Component} from "react";
+import Pagination from '@material-ui/lab/Pagination';
 import './SearchResult.scss'
 import Product from "../common/product/Product";
 import {appActions, appSelectors} from "../../hooks/app";
 import {connect} from "react-redux";
-import data from './products';
+import {ProductService} from "../../shared/services/ProductService";
+import spinner from './img/spinner.svg';
 
 class SearchResult extends Component {
     constructor(props) {
         super(props);
         this.state = {
             products: [],
+            activePage: 1,
+            totalPages: 1,
+            isLoading: false
         };
+
+        this.changePagination = this.changePagination.bind(this);
     }
 
     async componentDidMount() {
@@ -18,7 +25,8 @@ class SearchResult extends Component {
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.searchedWord && prevProps.searchedWord !== this.props.searchedWord) {
+        if (this.props.searchedWord &&
+            (prevProps.searchedWord !== this.props.searchedWord || prevState.activePage !== this.state.activePage)) {
             await this.setState({
                 products: [],
             })
@@ -27,21 +35,15 @@ class SearchResult extends Component {
     }
 
     async filterProducts() {
-        let products = [];
-        if (!isNaN(this.props.searchedWord)) {
-            products = data.filter(product => {
-                return product.id === Number(this.props.searchedWord)
-            });
-        } else if (this.props.searchedWord.length >= 3) {
-            products = data.filter(product => {
-                return product.brand.toLowerCase().includes(this.props.searchedWord.toLowerCase()) ||
-                    product.description.toLowerCase().includes(this.props.searchedWord.toLowerCase())
-            });
-        }
+        this.setState({isLoading: true})
+        const productService = new ProductService();
+        let productsResponse = await productService.getProducts(this.props.searchedWord, this.state.activePage);
+        const {products, totalPages} = productsResponse.data;
         this.setState({
             products: products,
+            totalPages,
+            isLoading: false
         })
-
     }
 
     isPalindrome(word) {
@@ -52,24 +54,46 @@ class SearchResult extends Component {
         return word === reverseString;
     }
 
+    async changePagination(event, value) {
+        this.setState({activePage: value})
+    };
+
     render() {
+        const {totalPages, isLoading} = this.state;
         return (
             this.props.searchedWord ?
                 (
                     <div className="search-result-container">
-                        <div className="word-search-container">
-                            Resultados para <strong>{this.props.searchedWord}</strong>:
+                        <div>
+                            <div className="word-search-container">
+                                Resultados para <strong>{this.props.searchedWord}</strong>:
+                            </div>
+                            <div className="products-search-container">
+                                {!this.state.isLoading ?
+
+                                    this.state.products.map((product, index) =>
+                                        <Product
+                                            key={index}
+                                            product={product}
+                                            isPalindrome={this.isPalindrome(this.props.searchedWord)}
+                                        />
+                                    ) :
+                                    <div className="spinner-container">
+                                        <img className="icon-img" src={spinner} alt="LiderLoaging"/>
+                                    </div>
+                                }
+                                <div className="pagination-container">
+                                    <Pagination
+                                        className="pagination"
+                                        count={totalPages}
+                                        variant="outlined"
+                                        color="primary"
+                                        disabled={isLoading}
+                                        onChange={this.changePagination}/>
+                                </div>
+                            </div>
                         </div>
-                        <div className="products-search-container">
-                            {this.state.products.map((product, index) =>
-                                <Product
-                                    key={index}
-                                    product={product}
-                                    isPalindrome={this.isPalindrome(this.props.searchedWord)}
-                                />
-                            )}
-                            <div>Aquí va el paginador</div>
-                        </div>
+
                     </div>
                 ) : null
         );
