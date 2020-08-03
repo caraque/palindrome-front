@@ -72,19 +72,21 @@ class SearchResult extends Component {
                             </div>
                             <div className="products-search-container">
                                 {!this.state.isLoading ?
-
-                                    this.state.products.map((product, index) =>
-                                        <Product
-                                            key={index}
-                                            product={product}
-                                            isPalindrome={this.isPalindrome(this.props.searchedWord)}
-                                        />
-                                    ) :
+                                    this.state.products.length ?
+                                        this.state.products.map((product, index) =>
+                                            <Product
+                                                key={index}
+                                                product={product}
+                                                isPalindrome={this.isPalindrome(this.props.searchedWord)}
+                                            />
+                                        ) :
+                                        <div style={{textAlign: 'center'}}>No existen productos</div>
+                                    :
                                     <div className="spinner-container">
                                         <img className="icon-img" src={spinner} alt="LiderLoaging"/>
                                     </div>
                                 }
-                                <div className="pagination-container">
+                                {this.state.products.length ? <div className="pagination-container">
                                     <Pagination
                                         className="pagination"
                                         page={activePage}
@@ -93,7 +95,7 @@ class SearchResult extends Component {
                                         color="primary"
                                         disabled={isLoading}
                                         onChange={this.changePagination}/>
-                                </div>
+                                </div> : null}
                             </div>
                         </div>
 

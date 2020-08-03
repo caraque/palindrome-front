@@ -1,8 +1,8 @@
 FROM node:12 as node
 WORKDIR /app
 COPY . .
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn build
 FROM nginx:alpine
 RUN echo $BFF
 COPY --from=node /app/build /usr/share/nginx/html
